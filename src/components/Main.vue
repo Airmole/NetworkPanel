@@ -83,6 +83,17 @@
         </div>
       </div>
 
+      <div class="speedItemContainer">
+        <div class="showItem">
+          <span class="font-background" style="font-size: larger;margin-right: 12px">最快速度</span>
+          <el-text class="font-data">{{ state.show.speedMax === '-' ? '-' : formatter(Number(state.show.speedMax), 1, [0, 0, 1, 2, 2, 2]) }}</el-text>
+        </div>
+        <div class="showItem">
+          <span class="font-background" style="font-size: larger;margin-right: 12px">最慢速度</span>
+          <el-text class="font-data">{{ state.show.speedMin === '-' ? '-' : formatter(Number(state.show.speedMin), 1, [0, 0, 1, 2, 2, 2]) }}</el-text>
+        </div>
+      </div>
+
       <div style="width: fit-content;display: block;margin-top:2ch;margin-left: auto;margin-right: auto;">
         <a class="button" v-if="!isRunning && !state.isChecking" @click="tryStart">
           <svg t="1694957757562" class="svg-icon"
@@ -297,7 +308,9 @@ const state = reactive({
   show: {
     allUsed: '-',
     speed: '-',
-    speedBit: '-'
+    speedBit: '-',
+    speedMax: '-',
+    speedMin: '-'
   },
   predict: {
     min: '-',
@@ -560,6 +573,9 @@ var setUsed = () => {
 var setSpeed = (speed: number) => {
   state.show.speed = formatter(speed, 1, [0, 0, 1, 2, 2, 2])
   state.show.speedBit = formatter(speed * 8, 2, [0, 0, 0, 2, 2, 2])
+  state.show.speedMax = Math.max(speed, parseFloat(state.show.speedMax === '-' ? '0' : state.show.speedMax)) + ''
+  if (state.show.speedMin === '-') state.show.speedMin = state.show.speedMax
+  if (speed > 0 && state.show.speedMin !== '-') state.show.speedMin = Math.min(speed, parseFloat(state.show.speedMin)) + ''
   state.predict.min = formatter(speed * 60, 0, [0, 0, 0, 1, 1, 1])
   state.predict.hour = formatter(speed * 60 * 60, 0, [0, 0, 0, 1, 1, 1])
   state.predict.day = formatter(speed * 60 * 60 * 24, 0, [0, 0, 0, 1, 1, 1])
@@ -854,6 +870,11 @@ onUnmounted(() => {
 <style scoped>
 .ItemContainer {
   column-count: 3;
+  margin-top: 10px;
+}
+
+.speedItemContainer {
+  column-count: 2;
   margin-top: 10px;
 }
 
